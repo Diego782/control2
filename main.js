@@ -2,6 +2,7 @@ const Gt06 = require('./gt06');
 const mqtt = require('mqtt');
 const net = require('net');
 const express = require('express');
+const path = require('path'); 
 const app = express();
 const fs = require('fs');
 const crc16 = require('./crc16');
@@ -14,17 +15,15 @@ const brokerPort = process.env.MQTT_BROKER_PORT || 1883;
 const mqttProtocol = process.env.MQTT_BROKER_PROTO || 'mqtt';
 const brokerUser = process.env.MQTT_BROKER_USER || 'DiegoGPS';
 const brokerPasswd = process.env.MQTT_BROKER_PASSWD || 'Dl1042248136!';
-app.use(express.static(path.join(__dirname, 'dist' )));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+
 var mqttClient = mqtt.connect(
     {
         host: brokerUrl,
         port: brokerPort,
         protocol: mqttProtocol,
         username: brokerUser,
-        password: brokerPasswd
+        password: brokerPasswd,
+        connectTimeout: 60 * 1000
     }
 );
 
@@ -88,8 +87,10 @@ server.listen(serverPort, () => {
 });
 
 // Serve static files from the "dist" directory
-app.use(express.static('dist'));
-
+app.use(express.static(path.join(__dirname, 'dist' )));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 app.get('/send-command/:command', (req, res) => {
     const command = req.params.command;
     if (gpsClient) {
