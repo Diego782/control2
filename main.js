@@ -1,11 +1,11 @@
-const Gt06 = require('../gt06');
+const Gt06 = require('./gt06');
 const mqtt = require('mqtt');
 const net = require('net');
 const express = require('express');
 const path = require('path'); 
 const app = express();
 const fs = require('fs');
-const crc16 = require('../crc16');
+const crc16 = require('./crc16');
 
 
 const serverPort = process.env.GT06_SERVER_PORT || 4000;
