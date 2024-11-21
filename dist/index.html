@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Control</title>
+</head>
+<body>
+    <h1>GPS Control</h1>
+    <button onclick="sendCommand('DYD#')">Cortar Carro</button>
+    <button onclick="sendCommand('HFYD#')">Encender Carro</button>
+
+    <script>
+        function sendCommand(command) {
+            fetch(`/send-command/${command}`)
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
