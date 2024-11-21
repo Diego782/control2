@@ -5,6 +5,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const fs = require('fs');
+const crc = require('crc'); // Necesitarás instalar el paquete crc: npm install crc
 
 const serverPort = process.env.GT06_SERVER_PORT || 4000;
 const rootTopic = process.env.MQTT_ROOT_TOPIC || 'gt06';
@@ -85,10 +86,29 @@ server.listen(serverPort, () => {
 // Serve static files from the "dist" directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
+function createCommand(command) {
+    let commandBuffer = Buffer.from(command, 'utf8');
+    let length = commandBuffer.length + 5;
+    let message = Buffer.alloc(length);
+    message[0] = 0x78;
+    message[1] = 0x78;
+    message[2] = length - 2;
+    message[3] = 0x80; // Protocol number for command
+    commandBuffer.copy(message, 4);
+    appendCrc16(message);
+    return message;
+}
+
+function appendCrc16(buffer) {
+    let crc16 = crc.crc16xmodem(buffer.slice(0, buffer.length - 2));
+    buffer.writeUInt16BE(crc16, buffer.length - 2);
+}
+
 app.get('/send-command/:command', (req, res) => {
     const command = req.params.command;
     if (gpsClient) {
-        gpsClient.write(command);
+        const commandMessage = createCommand(command);
+        gpsClient.write(commandMessage);
         res.send(`Command ${command} sent to GPS`);
     } else {
         res.send('No GPS client connected');
