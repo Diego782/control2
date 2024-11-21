@@ -5,10 +5,10 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const fs = require('fs');
-const crc = require('crc'); // Necesitarás instalar el paquete crc: npm install crc
+const crc = require('./crc16'); // Necesitarás instalar el paquete crc: npm install crc
 
 const serverPort = process.env.GT06_SERVER_PORT || 4000;
-const rootTopic = process.env.MQTT_ROOT_TOPIC || 'gt06';
+const rootTopic = process.env.MQTT_ROgtgvOT_TOPIC || 'gt06';
 const brokerUrl = process.env.MQTT_BROKER_URL || '7eb3252c060046b5981c2b54688b5a91.s1.eu.hivemq.cloud';
 const brokerPort = process.env.MQTT_BROKER_PORT || 1883;
 const mqttProtocol = process.env.MQTT_BROKER_PROTO || 'mqtt';
