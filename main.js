@@ -116,6 +116,8 @@ app.get('/send-command/:command', (req, res) => {
         const commandMessage = createCommand(command);
         gpsClient.write(commandMessage);
         res.send(`Command ${command} sent to GPS`);
+        console.log('Command sent:', command);
+        
     } else {
         res.send('No GPS client connected');
     }
