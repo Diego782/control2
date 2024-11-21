@@ -88,20 +88,24 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 function createCommand(command) {
     let commandBuffer = Buffer.from(command, 'utf8');
-    let length = commandBuffer.length + 5;
+    let length = commandBuffer.length + 9; // 1 byte para longitud, 1 byte para protocolo, 2 bytes para serial, 2 bytes para CRC, 2 bytes para fin
     let message = Buffer.alloc(length);
-    message[0] = 0x78;
-    message[1] = 0x78;
-    message[2] = length - 2;
-    message[3] = 0x80; // Protocol number for command
-    commandBuffer.copy(message, 4);
-    appendCrc16(message);
+    message[0] = 0x78; // Código de inicio
+    message[1] = 0x78; // Código de inicio
+    message[2] = length - 2; // Longitud del paquete excluyendo el código de inicio
+    message[3] = 0x40; // Número de protocolo
+    message.writeUInt16BE(1, 4); // Número de serie (puedes incrementar este valor según sea necesario)
+    commandBuffer.copy(message, 6); // Copiar el comando en el mensaje a partir del byte 6
+    appendCrc16(message); // Añadir CRC16
+    message[message.length - 2] = 0x0d; // Posición de fin
+    message[message.length - 1] = 0x0a; // Posición de fin
+    console.log('Command Message:', message.toString('hex')); // Registro del mensaje
     return message;
-}
+   }
 
 function appendCrc16(buffer) {
-    let crc16 = getCrc16(buffer.slice(0, buffer.length - 2));
-    crc16.copy(buffer, buffer.length - 2);
+    let crc16 = getCrc16(buffer.slice(0, buffer.length - 4));
+    crc16.copy(buffer, buffer.length - 4);
 }
 
 app.get('/send-command/:command', (req, res) => {
