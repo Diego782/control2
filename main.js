@@ -7,11 +7,11 @@ const fs = require('fs');
 
 const serverPort = process.env.GT06_SERVER_PORT || 4000;
 const rootTopic = process.env.MQTT_ROOT_TOPIC || 'gt06';
-const brokerUrl = process.env.MQTT_BROKER_URL || '7eb3252c060046b5981c2b54688b5a91.s1.eu.hivemq.cloud';
+const brokerUrl = process.env.MQTT_BROKER_URL || '11ec3ffa829840c785105a23a3994db1.s1.eu.hivemq.cloud';
 const brokerPort = process.env.MQTT_BROKER_PORT || 1883;
 const mqttProtocol = process.env.MQTT_BROKER_PROTO || 'mqtt';
-const brokerUser = process.env.MQTT_BROKER_USER || 'DiegoGPS2';
-const brokerPasswd = process.env.MQTT_BROKER_PASSWD || 'Dl1042248136.';
+const brokerUser = process.env.MQTT_BROKER_USER || 'DiegoGPS';
+const brokerPasswd = process.env.MQTT_BROKER_PASSWD || 'Dl1042248136!';
 
 var mqttClient = Mqtt.connect(
     {
