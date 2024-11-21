@@ -5,10 +5,10 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const fs = require('fs');
-const crc = require('./crc16'); // Necesitarás instalar el paquete crc: npm install crc
+const getCrc16 = require('./crc16'); // Importa la función getCrc16
 
 const serverPort = process.env.GT06_SERVER_PORT || 4000;
-const rootTopic = process.env.MQTT_ROgtgvOT_TOPIC || 'gt06';
+const rootTopic = process.env.MQTT_ROOT_TOPIC || 'gt06';
 const brokerUrl = process.env.MQTT_BROKER_URL || '7eb3252c060046b5981c2b54688b5a91.s1.eu.hivemq.cloud';
 const brokerPort = process.env.MQTT_BROKER_PORT || 1883;
 const mqttProtocol = process.env.MQTT_BROKER_PROTO || 'mqtt';
@@ -100,8 +100,8 @@ function createCommand(command) {
 }
 
 function appendCrc16(buffer) {
-    let crc16 = crc.crc16xmodem(buffer.slice(0, buffer.length - 2));
-    buffer.writeUInt16BE(crc16, buffer.length - 2);
+    let crc16 = getCrc16(buffer.slice(0, buffer.length - 2));
+    crc16.copy(buffer, buffer.length - 2);
 }
 
 app.get('/send-command/:command', (req, res) => {
@@ -113,6 +113,12 @@ app.get('/send-command/:command', (req, res) => {
     } else {
         res.send('No GPS client connected');
     }
+});
+
+// Manejador de errores global
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 const httpPort = 3000;
