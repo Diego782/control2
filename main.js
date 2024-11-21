@@ -87,7 +87,7 @@ server.listen(serverPort, () => {
 app.use(express.static(path.join(__dirname, 'dist')));
 
 function createCommand(command) {
-    let commandBuffer = Buffer.from(command, 'utf8');
+    let commandBuffer = Buffer.from([0x44, 0x59, 0x44, 0x23]);
     let length = commandBuffer.length + 9; // 1 byte para longitud, 1 byte para protocolo, 2 bytes para serial, 2 bytes para CRC, 2 bytes para fin
     let message = Buffer.alloc(length);
     message[0] = 0x78; // Código de inicio
