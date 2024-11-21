@@ -101,7 +101,7 @@ function createCommand(command) {
     message[message.length - 1] = 0x0a; // Posición de fin
     console.log('Command Message:', message.toString('hex')); // Registro del mensaje
     return message;
-   }
+}
 
 function appendCrc16(buffer) {
     let crc16 = getCrc16(buffer.slice(0, buffer.length - 4));
