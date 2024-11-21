@@ -97,8 +97,8 @@ function createCommand(command) {
     message.writeUInt16BE(1, 4); // Número de serie (puedes incrementar este valor según sea necesario)
     commandBuffer.copy(message, 6); // Copiar el comando en el mensaje a partir del byte 6
     appendCrc16(message); // Añadir CRC16
-    message[message.length - 2] = 0x0d; // Posición de fin
-    message[message.length - 1] = 0x0a; // Posición de fin
+    message[message.length - 4] = 0x0d; // Posición de fin
+    message[message.length - 3] = 0x0a; // Posición de fin
     console.log('Command Message:', message.toString('hex')); // Registro del mensaje
     return message;
 }
@@ -106,6 +106,7 @@ function createCommand(command) {
 function appendCrc16(buffer) {
     let crc16 = getCrc16(buffer.slice(0, buffer.length - 4));
     crc16.copy(buffer, buffer.length - 4);
+
 }
 
 app.get('/send-command/:command', (req, res) => {
