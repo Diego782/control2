@@ -10,15 +10,10 @@
     <button onclick="sendCommand('DYD#')">Cortar Carro</button>
     <button onclick="sendCommand('HFYD#')">Encender Carro</button>
 
-    <script>
-        function sendCommand(command) {
-            fetch(`/send-command/${command}`)
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
-        <script type="module" src="main.js"></script>
+    <script type="module">
+        import { sendCommand } from './main.js';
 
+        window.sendCommand = sendCommand;
+    </script>
 </body>
 </html>

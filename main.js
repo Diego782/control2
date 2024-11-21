@@ -100,6 +100,12 @@ app.get('/send-command/:command', (req, res) => {
         res.send('No GPS client connected');
     }
 });
+export function sendCommand(command) {
+    fetch(`/send-command/${command}`)
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => console.error('Error:', error));
+}
 
 const httpPort = 3000;
 app.listen(httpPort, () => {
