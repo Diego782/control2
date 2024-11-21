@@ -1,19 +1,19 @@
-const WebSocket = require('ws');
+const net = require('net');
 
-const wss = new WebSocket.Server({ port: 4000 });
-
-wss.on('connection', ws => {
+const server = net.createServer(socket => {
     console.log('Client connected');
 
-    ws.on('message', message => {
-        // message is a Buffer
-        console.log('Received GPS data (raw buffer):', message);
-        console.log('Received GPS data (hex):', message.toString('hex'));
+    socket.on('data', data => {
+        // data is a Buffer
+        console.log('Received GPS data (raw buffer):', data);
+        console.log('Received GPS data (hex):', data.toString('hex'));
     });
 
-    ws.on('close', () => {
+    socket.on('end', () => {
         console.log('Client disconnected');
     });
 });
 
-console.log('WebSocket server is running on ws://localhost:8080');
+server.listen(4000, () => {
+    console.log('TCP server is running on port 4000');
+});
