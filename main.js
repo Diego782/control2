@@ -77,6 +77,11 @@ var server = net.createServer((client) => {
         });
         gt06.clearMsgBuffer();
     });
+
+    // Agregar un registro para cualquier dato recibido del GPS
+    client.on('data', (data) => {
+        console.log('Received data from GPS:', data.toString('hex'));
+    });
 });
 
 server.listen(serverPort, () => {
@@ -86,41 +91,38 @@ server.listen(serverPort, () => {
 // Serve static files from the "dist" directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
-function createCommand(command) {
-    // Utiliza el valor hexadecimal directamente
-    let commandBuffer = Buffer.from([0x44, 0x59, 0x44, 0x23]); // DYD#
-    let length = commandBuffer.length + 10; // 1 byte para longitud, 1 byte para protocolo, 2 bytes para serial, 2 bytes para CRC, 2 bytes para fin
-    let message = Buffer.alloc(length);
-    message[0] = 0x78; // Código de inicio
-    message[1] = 0x78; // Código de inicio
-    message[2] = length - 2; // Longitud del paquete excluyendo el código de inicio
-    message[3] = 0x40; // Número de protocolo
-    message.writeUInt16BE(1, 4); // Número de serie (puedes incrementar este valor según sea necesario)
-    commandBuffer.copy(message, 6); // Copiar el comando en el mensaje a partir del byte 6
-    appendCrc16(message); // Añadir CRC16
-    message[message.length - 2] = 0x0d; // Posición de fin
-    message[message.length - 1] = 0x0a; // Posición de fin
-    console.log('Command Message:', message.toString('hex')); // Registro del mensaje
-    return message;
+function SendCommand(commandNumber) {
+    let commandBuffer;
+    
+    switch (commandNumber) {
+        case 0: // Apagar el carro
+            commandBuffer = Buffer.from([0x78, 0x78, 0x16, 0x80, 0x10, 0x00, 0x01, 0xA9, 0x64, 0x48, 0x46, 0x59, 0x44, 0x2C, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x23, 0x00, 0xA0, 0x8B, 0x1B, 0x0D, 0x0A]);
+            break;
+        case 1: // Encender el carro
+            commandBuffer = Buffer.from([0x78, 0x78, 0x19, 0x15, 0x11, 0x00, 0x01, 0xA9, 0x63, 0x48, 0x46, 0x59, 0x44, 0x3D, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x21, 0x00, 0x02, 0x00, 0x1E, 0xF8, 0x93, 0x0D, 0x0A]);
+            break;
+        default:
+            console.error('Comando no reconocido');
+            return;
+    }
+
+    if (gpsClient) {
+        gpsClient.write(commandBuffer);
+        console.log('Command sent:', commandBuffer.toString('hex'));
+    } else {
+        console.error('No GPS client connected');
+    }
 }
 
 function appendCrc16(buffer) {
     let crc16 = getCrc16(buffer.slice(0, buffer.length - 4));
     crc16.copy(buffer, buffer.length - 4);
-
 }
 
-app.get('/send-command/:command', (req, res) => {
-    const command = req.params.command;
-    if (gpsClient) {
-        const commandMessage = createCommand(command);
-        gpsClient.write(commandMessage);
-        res.send(`Command ${command} sent to GPS`);
-        console.log('Command sent:', command);
-        
-    } else {
-        res.send('No GPS client connected');
-    }
+app.get('/send-command/:commandNumber', (req, res) => {
+    const commandNumber = parseInt(req.params.commandNumber, 10);
+    SendCommand(commandNumber);
+    res.send(`Command ${commandNumber} sent to GPS`);
 });
 
 // Manejador de errores global

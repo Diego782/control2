@@ -8,8 +8,8 @@
 </head>
 <body>
     <h1>GPS Control</h1>
-    <button onclick="sendCommand('DYD#')">Cortar Carro</button>
-    <button onclick="sendCommand('HFYD#')">Encender Carro</button>
+    <button onclick="sendCommand(0)">Cortar Carro</button>
+    <button onclick="sendCommand(1)">Encender Carro</button>
 
     <script type="module">
         import { sendCommand } from './src/main.js';
