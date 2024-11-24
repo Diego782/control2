@@ -119,11 +119,11 @@ function appendCrc16(buffer) {
     crc16.copy(buffer, buffer.length - 4);
 }
 
-app.get('/send-command/:commandNumber', (req, res) => {
-    const commandNumber = parseInt(req.params.commandNumber, 10);
-    SendCommand(commandNumber);
-    res.send(`Command ${commandNumber} sent to GPS`);
-});
+        app.get('/send-command/:commandNumber', (req, res) => {
+            const commandNumber = parseInt(req.params.commandNumber, 10);
+            SendCommand(commandNumber);
+            res.send(`Command ${commandNumber} sent to GPS`);
+        });
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
